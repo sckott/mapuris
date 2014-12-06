@@ -32,8 +32,8 @@ make_entry <- function(cr, cm, fm){
   list(
     doi=cr$DOI,
     url=cr$URL,
-    pdf=paste0(cr$DOI, "/pdf"),
-    xml=paste0(cr$DOI, "/xml"),
+    pdf=paste0(cr$URL, "/pdf"),
+    xml=paste0(cr$URL, "/xml"),
     cm_target_doi=cm$target_doi,
     cm_assertions=cm$assertions,
     figs=pick(fm$figs),

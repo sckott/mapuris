@@ -5,8 +5,13 @@ library("httr")
 library("jsonlite")
 library("XML")
 
+# load code
+source("cr_code.R")
+source("zzz.R")
+
+# 4950 is the F1000Research member ID
 # cr_members(query = "f1000")
-out <- cr_members(member_ids = 4950, works = TRUE, limit = 100)$data
+out <- cr_members(member_ids = 4950, works = TRUE, limit = 50)$data
 dois <- out$DOI
 
 mdout <- apply(out, 1, function(x) cross_mark(x['DOI']))
@@ -41,3 +46,4 @@ alldat <- Map(make_entry,
 )
 
 jsonlite::toJSON(alldat, auto_unbox = TRUE, pretty = TRUE)
+jsonlite::toJSON(alldat, auto_unbox = TRUE)
