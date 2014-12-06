@@ -1,0 +1,17 @@
+{
+    "contents" : "cr_full_links <- function(doi, type='xml', ...)\n{\n  url <- sprintf(\"http://dx.doi.org/%s\", doi)\n  res <- GET(url, hd(), ...)\n  stopifnot(res$headers$`content-type` == hd()$httpheader[[1]])\n  # linkres <- GET(res$headers$location, hd())\n  # stopifnot(res$headers$`content-type` == hd()$httpheader[[1]])\n  # tt <- res$headers$location\n  tt <- res$headers$link\n  if(is.null(tt)) NULL else get_type(x=tt, y=type)\n}\n\ncr_full_text <- function(url, ...)\n{\n  res <- GET(url[[1]])\n  #   stopifnot(res$headers$`content-type` == hd()$httpheader[[1]])\n  tt <- res$headers$link\n  if(is.null(tt)) stop(\"No full text links\", call. = FALSE)\n  get_type(tt, type)\n}\n\nhd <- function(header){\n  add_headers(Accept = \"application/vnd.crossref.unixsd+xml\")\n}\n\nget_type <- function(x, y = 'xml') {\n  res <- parse_urls(x)\n  withtype <- Filter(function(x) any(\"type\" %in% names(x)), res)\n  withtype <- setNames(withtype, sapply(withtype, \"[[\", \"type\"))\n  if(y == \"all\"){\n    lapply(withtype, \"[[\", \"url\")\n  } else {\n    y <- match.arg(y, c('xml','plain','pdf'))\n    y <- grep(y, c(\"text/xml\",\"text/plain\",\"application/xml\",\"application/pdf\"), value = TRUE)\n    cr_compact(sapply(y, function(r) withtype[[r]]$url))\n    #     withtype[[y]]$url\n  }\n}\n\nparse_urls <- function(x) {\n  lapply(strsplit(x, \",\")[[1]], function(z) {\n    zz <- gsub(\"\\\\s\", \"\", strsplit(z, \";\")[[1]])\n    url <- str_extract(zz[1], \"http://[\\\\?=:a-zA-Z\\\\./0-9-]+\")\n    other <- sapply(zz[2:length(zz)], function(w) {\n      nn <- gsub('\\\\\"', \"\", strsplit(w, \"=\")[[1]])\n      setNames(nn[2], nn[1])\n    }, USE.NAMES=FALSE)\n    as.list(c(url=url, other))\n  })\n}\n",
+    "created" : 1417899661548.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "628493148",
+    "id" : "FFAF7DD0",
+    "lastKnownWriteTime" : 1417899669,
+    "path" : "~/github/sac/mapuris/cr_code.R",
+    "project_path" : "cr_code.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

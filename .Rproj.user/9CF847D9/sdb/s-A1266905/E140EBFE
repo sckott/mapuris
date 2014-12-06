@@ -1,0 +1,17 @@
+{
+    "contents" : "library(\"rplos\")\nlibrary(\"rcrossref\")\nlibrary(\"dplyr\")\nlibrary(\"httr\")\nlibrary(\"jsonlite\")\nlibrary(\"XML\")\n\n# cr_members(query = \"f1000\")\nout <- cr_members(member_ids = 4950, works = TRUE, limit = 100)$data\ndois <- out$DOI\n\nmdout <- apply(out, 1, function(x) cross_mark(x['DOI']))\n\nfigs_media <- lapply(dois, function(x){\n  tmp <- get_xml(make_url(x))\n  if(is.na(tmp)){\n    list(\n      figs=NA,\n      media=NA\n    )\n  } else {\n    list(\n      figs=extract_figs(tmp),\n      media=extract_media(tmp)\n    )\n  }\n})\n\n# F1000 isn't giving links to full text yet...\n# cr_full_links(\"10.12688/f1000research.3817.1\")\nalldat <- Map(make_entry,\n    apply(out, 1, function(x) as.list(x[c('DOI','URL')])),\n    lapply(mdout, function(x){\n      if(all(is.na(x))){\n        list(cm_updates=NA, cm_assertions=NA)\n      } else {\n        list(target_doi=pick(x$updated_by$doi), assertions=no_na(x$assertions$href))\n      }\n    }),\n    figs_media\n)\n\njsonlite::toJSON(alldat, auto_unbox = TRUE, pretty = TRUE)\n",
+    "created" : 1417898634182.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2881059239",
+    "id" : "E140EBFE",
+    "lastKnownWriteTime" : 1417906790,
+    "path" : "~/github/sac/mapuris/mapuris.R",
+    "project_path" : "mapuris.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

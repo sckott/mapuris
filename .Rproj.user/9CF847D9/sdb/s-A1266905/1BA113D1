@@ -1,0 +1,17 @@
+{
+    "contents" : "no_na <- function(x) x[!is.na(x)]\npick <- function(x) if(is.null(x) || length(x)==0) NA else x\n\n# x <- get_xml(\"10.12688/f1000research.2-191.v2\")\n# extract_figs(x)\nget_xml <- function(x, ...){\n#   id <- sub(\"\\\\.\", \"/\", sub(\"10.12688/f1000research.\", \"\", x))\n  res <- GET(x, ...)\n  tt <- content(res, as=\"text\")\n  try_ <- tryCatch(xmlParse(tt), error=function(e) e)\n  if(is(try_, \"simpleError\")) NA else try_\n}\n\nextract_figs <- function(x){\n  xpathSApply(x, \"//graphic[@xlink:href]\", xmlGetAttr, name=\"xlink:href\")\n}\n\nextract_media <- function(x){\n  xpathSApply(x, \"//media\", xmlGetAttr, name=\"xlink:href\")\n}\n\n# out <- get_xml(\"10.12688/f1000research.5706.2\")\n# extract_figs(out)\n# extract_media(out)\n\nmake_url <- function(x){\n  id <- sub(\"\\\\.\", \"/\", sub(\"[0-9\\\\.]+/f1000research.\", \"\", x))\n  sprintf(\"http://f1000research.com/articles/%s/xml\", id)\n}\n\nmake_entry <- function(cr, cm, fm){\n  list(\n    doi=cr$DOI,\n    url=cr$URL,\n    pdf=NULL,\n    xml=NULL,\n    cm_target_doi=cm$target_doi,\n    cm_assertions=cm$assertions,\n    figs=pick(fm$figs),\n    media=pick(fm$media)\n  )\n}\n\n# cross_mark(\"10.12688/f1000research.2-191.v2\")\ncross_mark <- function(doi, ...){\n  url <- paste0(cmurl(), doi)\n  res <- GET(url, ...)\n  tt <- content(res, as=\"text\")\n  out <- tryCatch(jsonlite::fromJSON(tt), error=function(e) e)\n  if(is(out, \"simpleError\")) NA else out\n}\ncmurl <- function() \"http://doi.crossref.org/crossmark?doi=\"\n",
+    "created" : 1417899981243.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1440465508",
+    "id" : "1BA113D1",
+    "lastKnownWriteTime" : 1417906511,
+    "path" : "~/github/sac/mapuris/zzz.R",
+    "project_path" : "zzz.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
