@@ -23,17 +23,18 @@ extract_media <- function(x){
 # extract_figs(out)
 # extract_media(out)
 
-make_url <- function(x){
+make_url <- function(x, ext="xml"){
   id <- sub("\\.", "/", sub("[0-9\\.]+/f1000research.", "", x))
-  sprintf("http://f1000research.com/articles/%s/xml", id)
+  sprintf("http://f1000research.com/articles/%s/%s", id, ext)
 }
 
 make_entry <- function(cr, cm, fm){
   list(
     doi=cr$DOI,
     url=cr$URL,
-    pdf=paste0(cr$URL, "/pdf"),
-    xml=paste0(cr$URL, "/xml"),
+    pdf=make_url(cr$DOI, "pdf"),
+    xml=make_url(cr$DOI, "xml"),
+#     http://f1000research.com/articles/3-133/v2
     cm_target_doi=cm$target_doi,
     cm_assertions=cm$assertions,
     figs=pick(fm$figs),
