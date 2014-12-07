@@ -48,6 +48,21 @@ cross_mark <- function(doi, ...){
   res <- GET(url, ...)
   tt <- content(res, as="text")
   out <- tryCatch(jsonlite::fromJSON(tt), error=function(e) e)
-  if(is(out, "simpleError")) NA else out
+  if(is(out, "simpleError")) {
+    list(cm_updates=NA, cm_assertions=NA)
+  } else {
+    list(target_doi=pick(x$updated_by$doi), assertions=no_na(x$assertions$href))
+  }
 }
 cmurl <- function() "http://doi.crossref.org/crossmark?doi="
+
+# get any useful data from crossref lagotto instance
+alm_data <- function(x, ...){
+  url <- "http://det.labs.crossref.org/api/v5/articles"
+  alm_events(x, url=url, key=getOption("crossrefalmkey"), ...)
+}
+
+alm_pensoft <- function(x, ...){
+  url <- "http://alm.pensoft.net:81/api/v5/articles"
+  alm_events(x, url=url, key=getOption("pensoftalmkey"), ...)
+}
